@@ -17,14 +17,10 @@ public class DungeonServer {
 
     private final List<Player> players;
 
-    private final List<Creature> creatures;
-
     private Room startingRoom, winningRoom;
 
     public DungeonServer() {
         players = new ArrayList<>();
-
-        creatures = new ArrayList<>();
 
         createRooms();
     }
@@ -96,7 +92,7 @@ public class DungeonServer {
         prison.addItem(new Item("Armor"));
 
         outdoors.setExit("south", stairway);
-        //outdoors.setRequiredItem(goldenKey);
+        outdoors.setRequiredItem(goldenKey);
 
         startingRoom = storage;  // start game in the storage room
         winningRoom = outdoors;
@@ -197,10 +193,6 @@ public class DungeonServer {
 
             player.sendTCP(packet);
         }
-    }
-
-    public List<Player> getPlayers() {
-        return players;
     }
 
     public void disconnect() {

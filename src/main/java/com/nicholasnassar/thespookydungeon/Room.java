@@ -38,9 +38,9 @@ public class Room {
     public Room(String description, String image) {
         this.description = description;
         this.image = image;
-        exits = new HashMap<String, Room>();
-        enemies = new ArrayList<Creature>();
-        items = new ArrayList<Item>();
+        exits = new HashMap<>();
+        enemies = new ArrayList<>();
+        items = new ArrayList<>();
         double chance = Math.random();
         if (chance < 0.5) {
             addItem(new Item("Health Potion"));

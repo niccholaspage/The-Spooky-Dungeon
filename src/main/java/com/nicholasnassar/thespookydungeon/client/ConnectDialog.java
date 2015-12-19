@@ -7,7 +7,8 @@ import java.awt.*;
 
 public class ConnectDialog extends JFrame {
     private DungeonServer server;
-    private JTextField ipField, nameField;
+    private final JTextField ipField;
+    private final JTextField nameField;
 
     public ConnectDialog() {
         super("Connect");

@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class GUI extends JFrame {
     private DungeonClient client;
-    private JPanel panel;
+    private final JPanel panel;
     private JTextArea textArea;
     private JTextField textField;
     private JLabel roomPicture;

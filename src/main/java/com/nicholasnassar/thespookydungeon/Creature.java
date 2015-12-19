@@ -60,8 +60,6 @@ public class Creature {
 
     /**
      * Sets the room the creature is in
-     *
-     * @param room
      */
     public void setRoom(Room room) {
         this.room = room;
