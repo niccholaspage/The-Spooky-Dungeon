@@ -29,7 +29,6 @@ import java.util.Map;
  * the bottom right of the GUI.
  */
 public class GUI extends JFrame {
-    private final Game game;
     private DungeonClient client;
     private JPanel panel;
     private JTextArea textArea;
@@ -45,7 +44,6 @@ public class GUI extends JFrame {
      * Creates the GUI and initializes its components
      */
     public GUI(Game game) {
-        this.game = game;
         panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
         setupCenterPanel();
