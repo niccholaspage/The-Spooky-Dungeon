@@ -96,7 +96,7 @@ public class GUI extends JFrame {
         slashPicture.setAlignmentY(0.5F);
         try {
             slashPicture.setIcon(new ImageIcon(ImageIO.read(getClass().getClassLoader().getResourceAsStream("images/slash/slash.png"))));
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
         slashPicture.setVisible(false);
@@ -252,7 +252,7 @@ public class GUI extends JFrame {
             } else {
                 getRoomPicture().setIcon(new ImageIcon(ImageIO.read(stream)));
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
 
         }
         north.setEnabled(packet.northEnabled);

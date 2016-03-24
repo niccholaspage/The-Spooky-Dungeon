@@ -98,30 +98,42 @@ public class ServerListener extends Listener {
 
             if (packet.direction.equals("back")) {
                 List<Room> previousRooms = player.getPreviousRooms();
+
                 if (previousRooms.isEmpty()) {
                     player.sendMessage("You can't go back!");
                 } else {
                     int lastElement = previousRooms.size() - 1;
+
                     player.setRoom(previousRooms.get(lastElement));
+
                     player.playSoundEffect("walk");
+
                     previousRooms.remove(lastElement);
+
                     player.updateUI();
                 }
             } else {
                 List<Item> inventory = player.getInventory();
+
                 if (nextRoom != null && nextRoom.getRequiredItem() != null) {
                     Item requiredItem = nextRoom.getRequiredItem();
+
                     if (inventory.contains(requiredItem)) {
                         player.sendMessage("You used your " + requiredItem.getName().toLowerCase() + " to open the door!");
+
                         player.removeItem(requiredItem);
+
                         nextRoom.setRequiredItem(null);
                     } else {
                         player.sendMessage("You need a " + requiredItem.getName().toLowerCase() + " to enter this room.");
+
                         return;
                     }
                 }
                 player.addPreviousRoom(currentRoom);
+
                 player.setRoom(nextRoom);
+
                 player.playSoundEffect("walk");
                 //TODO: FIGURE OUT WINNING FOR OTHER PLAYERS?
                 if (nextRoom == server.getWinningRoom()) {
@@ -159,9 +171,13 @@ public class ServerListener extends Listener {
             player.updateUI();
         } else if (object instanceof PacketGrabItem) {
             PacketGrabItem packet = (PacketGrabItem) object;
+
             Room room = player.getRoom();
+
             Item item = room.getItems().get(packet.itemID);
+
             room.removeItem(item);
+
             if (item.getName().equals("Epic Sword")) {
                 for (int i = 0; i < player.getInventory().size(); i++) {
                     if (player.getInventory().get(i).getName().equals("Sword")) {
@@ -170,17 +186,23 @@ public class ServerListener extends Listener {
                 }
             }
             player.addItem(item);
-            if (item.getName().equals("Armor")) {
-                player.setMaxHealth(40);
-                player.setHealth(40);
-                player.sendMessage("You equipped armor! You now have 40 health!");
-            } else if (item.getName().equals("Shield")) {
-                player.setMinDamageBlock(5);
-                player.setMaxDamageBlock(7);
-                player.sendMessage("You equipped a shield! You now block 5 to 7 damage on each attack!");
-            } else {
-                player.sendMessage("You picked up a " + item.getName().toLowerCase() + "!");
+
+            switch (item.getName()) {
+                case "Armor":
+                    player.setMaxHealth(40);
+                    player.setHealth(40);
+                    player.sendMessage("You equipped armor! You now have 40 health!");
+                    break;
+                case "Shield":
+                    player.setMinDamageBlock(5);
+                    player.setMaxDamageBlock(7);
+                    player.sendMessage("You equipped a shield! You now block 5 to 7 damage on each attack!");
+                    break;
+                default:
+                    player.sendMessage("You picked up a " + item.getName().toLowerCase() + "!");
+                    break;
             }
+
             if (player.hasItem("Epic Sword")) {
                 player.setMinDamage(10);
                 player.setMaxDamage(13);
@@ -188,74 +210,109 @@ public class ServerListener extends Listener {
                 player.setMinDamage(5);
                 player.setMaxDamage(7);
             }
+
             List<Player> playersInRoom = server.getPlayers(room);
+
             String message = player.getName() + " picked up a " + item.getName().toLowerCase() + "!";
+
             for (Player loopPlayer : playersInRoom) {
                 if (loopPlayer != player) {
                     loopPlayer.sendMessage(message);
                 }
+
                 loopPlayer.updateUI();
             }
         } else if (object instanceof PacketUseItem) {
             PacketUseItem packet = (PacketUseItem) object;
+
             Item item = player.getInventory().get(packet.itemID);
+
             if (player.getHealth() >= player.getMaxHealth()) {
                 player.sendMessage("You are already at full health!");
+
                 return;
             }
+
             String itemName = item.getName();
+
             int healthGain = 0;
-            if (itemName.equals("Health Potion")) {
-                healthGain = 5;
-            } else if (itemName.equals("Super Health Potion")) {
-                healthGain = 10;
-            } else if (itemName.equals("Mega Health Potion")) {
-                healthGain = 20;
+
+            switch (itemName) {
+                case "Health Potion":
+                    healthGain = 5;
+                    break;
+                case "Super Health Potion":
+                    healthGain = 10;
+                    break;
+                case "Mega Health Potion":
+                    healthGain = 20;
+                    break;
             }
+
             player.gainHealth(healthGain);
+
             player.removeItem(item);
+
             player.sendMessage("You drank a " + item.getName().toLowerCase() + " and gained " + healthGain +
                     " health! You are now at " + player.getHealth() + " health.");
+
             String message = player.getName() + " used a " + item.getName().toLowerCase() + "!";
+
             for (Player loopPlayer : server.getPlayers(player.getRoom())) {
                 if (loopPlayer != player) {
                     loopPlayer.sendMessage(message);
                 }
+
                 loopPlayer.updateUI();
             }
         } else if (object instanceof PacketAttack) {
             PacketAttack packet = (PacketAttack) object;
+
             Room room = player.getRoom();
+
             Creature creature;
             try {
                 creature = room.getEnemies().get(packet.enemyID);
             } catch (Exception e) {
                 return;
             }
+
             int damage = calculateDamage(player, creature);
+
             player.sendMessage("You attacked the " + creature.getName().toLowerCase() + " and dealt " + damage + " damage!");
+
             creature.setHealth(creature.getHealth() - damage);
+
             if (creature.getHealth() <= 0) {
                 room.removeEnemy(creature);
+
                 player.sendMessage("The " + creature.getName().toLowerCase() + " is dead!");
+
                 Item drop = creature.getDrop();
+
                 if (drop != null) {
                     room.addItem(drop);
+
                     player.sendMessage("The " + creature.getName().toLowerCase() + " dropped a " + drop.getName().toLowerCase() + "!");
                 }
             } else {
                 int enemyDamage = calculateDamage(creature, player);
+
                 player.setHealth(player.getHealth() - enemyDamage);
+
                 player.sendMessage("The " + creature.getName().toLowerCase() + " dealt " + enemyDamage + " damage! You have " + player.getHealth() + " HP left!");
             }
 
             String message = player.getName() + " attacked " + creature.getName().toLowerCase() + "!";
+
             for (Player loopPlayer : server.getPlayers(player.getRoom())) {
                 if (loopPlayer != player) {
                     loopPlayer.sendMessage(message);
                 }
+
                 loopPlayer.updateUI(true);
             }
+            
             //gui.playAttackClip();
             if (player.getHealth() <= 0) {
                 player.kill();

@@ -20,11 +20,16 @@ import java.util.HashMap;
  */
 
 public class Room {
-    private String description;
-    private String image;
-    private HashMap<String, Room> exits;        // stores exits of this room.
-    private ArrayList<Creature> enemies;
-    private ArrayList<Item> items;
+    private final String description;
+
+    private final String image;
+
+    private final HashMap<String, Room> exits;
+
+    private final ArrayList<Creature> enemies;
+
+    private final ArrayList<Item> items;
+
     private Item requiredItem;
 
     /**
@@ -37,11 +42,17 @@ public class Room {
      */
     public Room(String description, String image) {
         this.description = description;
+
         this.image = image;
+
         exits = new HashMap<>();
+
         enemies = new ArrayList<>();
+
         items = new ArrayList<>();
+
         double chance = Math.random();
+
         if (chance < 0.5) {
             addItem(new Item("Health Potion"));
         } else if (chance < 0.8) {
@@ -49,6 +60,7 @@ public class Room {
         } else if (chance < 0.9) {
             addItem(new Item("Mega Health Potion"));
         }
+
         requiredItem = null;
     }
 
@@ -88,13 +100,16 @@ public class Room {
      */
     public String getLongDescription(Player player) {
         String longDescription = "You are " + description + ".\n" + getExitString();
+
         if (!items.isEmpty() && player.hasSearchedRoom(this)) {
             longDescription += "\n" + getItemsString();
         }
+
         for (Creature enemy : enemies) {
             longDescription += "\n" + "There is a " + enemy.getName().toLowerCase() + " with " + enemy.getHealth() + " health in this room!";
 
         }
+
         return longDescription;
     }
 
@@ -106,10 +121,13 @@ public class Room {
      */
     private String getExitString() {
         String returnString = "Exits:";
+
         Set<String> keys = exits.keySet();
+
         for (String exit : keys) {
             returnString += " " + exit;
         }
+
         return returnString;
     }
 
@@ -173,8 +191,10 @@ public class Room {
      */
     public String getItemsString() {
         String itemsFound = "You see a " + items.get(0).getName().toLowerCase();
+
         for (int i = 1; i < items.size(); i++) {
             String itemName = items.get(i).getName().toLowerCase();
+
             if (i != 0 && i == items.size() - 1) {
                 if (items.size() > 2) {
                     itemsFound += ",";
@@ -184,6 +204,7 @@ public class Room {
                 itemsFound += ", a " + itemName;
             }
         }
+
         return itemsFound + " on the ground.";
     }
 
