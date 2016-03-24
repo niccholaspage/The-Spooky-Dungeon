@@ -312,7 +312,7 @@ public class ServerListener extends Listener {
 
                 loopPlayer.updateUI(true);
             }
-            
+
             //gui.playAttackClip();
             if (player.getHealth() <= 0) {
                 player.kill();
